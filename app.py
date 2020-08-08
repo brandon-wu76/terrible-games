@@ -1,8 +1,50 @@
 import pygame
 import game_config as gc
 from button import Button
-
 from pygame import display, event
+
+
+def init_title_buttons(button_names, button_coords):
+    '''
+    Initializes buttons on title screen
+    Params: button_names contains a list of button names
+    button_coords contains coordinate tuples for top left corner
+    '''
+
+    assert len(button_names) == len(button_coords)
+
+    buttons_list = []
+
+    for name, coords in zip(button_names, button_coords):
+        button = Button(name, button_font)
+        x_pos = int(gc.DISPLAY_WIDTH * coords[0])
+        y_pos = int(gc.DISPLAY_HEIGHT * coords[1] - button.surf.get_height() / 2)
+        button.set_pos(x_pos, y_pos)
+        buttons_list.append(button)
+
+    return buttons_list
+
+###  Game Rendering Functions  ###
+
+def disp_title():
+    # Renders title text and buttons
+    x_pos = (gc.DISPLAY_WIDTH - title_width) // 2
+    y_pos = (gc.DISPLAY_HEIGHT - title_height) // 3
+    window.blit(title_text, (x_pos, y_pos))
+    for button in button_list:
+        button.renderButton(window)
+
+def disp_tiles():
+    test_text = title_font.render("Tiles", True, (0, 0, 0))
+    window.blit(test_text, (0, 0))
+
+def disp_52pickup():
+    return
+
+def disp_thirdgame():
+    return
+
+###  Game Initialization  ###
 
 pygame.init()
 
@@ -12,26 +54,48 @@ pygame.font.init()
 
 title_font = pygame.font.SysFont(('Comic Sans MS'), 60)
 button_font = pygame.font.SysFont(('Comic Sans MS'), 30)
-tiles_button = Button("Tiles", button_font)
+
+title_text = title_font.render("Terrible Games", True, (0, 0, 0))
+title_height = title_text.get_height()
+title_width = title_text.get_width()
+
+game_list = ["Tiles", "52 Pickup", "Third Game"]
+button_coordinates = [(1/5,3/4), (1/2,3/4), (4/5,3/4)]
+
+button_list = init_title_buttons(game_list, button_coordinates)
+
 running = True
 
+disp_states = {"Title": disp_title,
+               "Tiles": disp_tiles,
+               "52 Pickup": disp_52pickup,
+               "Third Game": disp_thirdgame
+}
+
+current_screen = "Title"
+
+###  Game Loop  ###
+
 while running:
+
+    window.fill((209, 169, 132))
+
+    assert current_screen in disp_states
+
+    disp_states[current_screen]()
+
     for e in event.get():
         if e.type == pygame.QUIT:
             running = False
 
+        if e.type == pygame.KEYDOWN:
+            if e.key == pygame.K_BACKSPACE:
+                current_screen = "Title"
+
         if e.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-
-    window.fill((255, 255, 255))
-
-    title_text = title_font.render("Terrible Games", True, (0,0,0))
-    title_height = title_text.get_height()
-    title_width = title_text.get_width()
-    window.blit(title_text, ((gc.DISPLAY_WIDTH-title_width)//2,
-                             (gc.DISPLAY_HEIGHT-title_height)//3))
-
-    tiles_button = Button("Tiles", button_font)
-    tiles_button.renderButton(window)
+            for button in button_list:
+                if button.bg_rect.collidepoint(mouse_x, mouse_y):
+                    current_screen = button.name
 
     display.flip()
