@@ -1,7 +1,18 @@
+import pygame
+
 DISPLAY_HEIGHT = 600
 DISPLAY_WIDTH = 600
 SQUARE_SIZE = 128
 NUM_SQUARE_PER_SIDE = 4
 
+
 # Perfect button width when buttons are centered at 1/5, 1/2, 4/5
 BUTTON_WIDTH = int(DISPLAY_WIDTH*0.275)
+
+# width to allow a title and some margins
+TILE_WIDTH = int(DISPLAY_HEIGHT*0.85*0.23)
+TILE_MARGIN_WIDTH = int(DISPLAY_WIDTH*0.08)
+TILE_MARGIN_HEIGHT_BOTTOM = int(DISPLAY_HEIGHT*0.06)
+TILE_TOP_OFFSET = int(DISPLAY_HEIGHT*0.15)
+
+

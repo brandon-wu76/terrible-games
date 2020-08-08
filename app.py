@@ -1,7 +1,9 @@
 import pygame
+import random
 import game_config as gc
 from button import Button
 from pygame import display, event
+from definitions import Tile
 
 
 def init_title_buttons(button_names, button_coords):
@@ -24,6 +26,51 @@ def init_title_buttons(button_names, button_coords):
 
     return buttons_list
 
+### Tile initialization ### 
+
+SQUARE_SIZE = gc.TILE_WIDTH*gc.TILE_WIDTH
+NUM_SQUARE_PER_SIDE = 4
+def find_index(x,y):
+    row = (y-gc.TILE_TOP_OFFSET) // SQUARE_SIZE
+    col = (x-gc.TILE_MARGIN_WIDTH) // SQUARE_SIZE
+    index = row * NUM_SQUARE_PER_SIDE + col
+    return index
+
+def find_tile_xpos_from_index(index):
+    col = index %gc.NUM_SQUARE_PER_SIDE
+    xpos = int(gc.TILE_MARGIN_WIDTH + col*gc.TILE_WIDTH)
+    return xpos
+
+def find_tile_ypos_from_index(index):
+    row = index // gc.NUM_SQUARE_PER_SIDE
+    ypos = int(gc.TILE_TOP_OFFSET + row*gc.TILE_WIDTH)
+    return ypos
+
+def init_tiles():
+    available_tiles = [x for x in range(0,16)]
+    #tile with number 0 will display as blank
+    #initialize tile placement
+    initTileList = [] 
+    #indices in tileList will the the same as indicies of the game
+    #The value at each index is the displayed value
+    for i in range(16):
+        randInd = random.randrange(0, len(available_tiles))
+        randNumber = available_tiles.pop(randInd)
+        if randNumber == 0:
+            emptyIndex = i
+        initTileList.append(randNumber)
+    # print(initTileList)
+    tileList = []
+    for index in range(16):
+        tile = Tile(str(initTileList[index]), index, tile_font)
+        xpos = find_tile_xpos_from_index(index)
+        ypos = find_tile_ypos_from_index(index)
+        tile.set_pos(xpos, ypos)
+        tileList.append(tile)
+    
+    return tileList
+        
+
 ###  Game Rendering Functions  ###
 
 def disp_title():
@@ -37,6 +84,8 @@ def disp_title():
 def disp_tiles():
     test_text = title_font.render("Tiles", True, (0, 0, 0))
     window.blit(test_text, (0, 0))
+    for tile in tileList:
+        tile.renderTile(window)
 
 def disp_52pickup():
     return
@@ -54,6 +103,7 @@ pygame.font.init()
 
 title_font = pygame.font.SysFont(('Comic Sans MS'), 60)
 button_font = pygame.font.SysFont(('Comic Sans MS'), 30)
+tile_font = pygame.font.SysFont(('Comic Sans MS'), 38)
 
 title_text = title_font.render("Terrible Games", True, (0, 0, 0))
 title_height = title_text.get_height()
@@ -63,6 +113,7 @@ game_list = ["Tiles", "52 Pickup", "Third Game"]
 button_coordinates = [(1/5,3/4), (1/2,3/4), (4/5,3/4)]
 
 button_list = init_title_buttons(game_list, button_coordinates)
+tileList = init_tiles()
 
 running = True
 
