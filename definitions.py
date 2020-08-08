@@ -27,4 +27,4 @@ class Tile:
         #renders a tile if set_pos has been called
         assert self.bg_rect is not None
         pygame.draw.rect(window, (0,0,0), self.bg_rect, 3)
-        window.blit(self.surf, (self.xpos, self.ypos))
+        window.blit(self.surf, (self.xpos + gc.TILE_WIDTH//3, self.ypos + gc.TILE_WIDTH//3.5))
