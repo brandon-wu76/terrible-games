@@ -8,8 +8,10 @@ class Tile:
     def __init__(self, number, index, tile_font):
         self.index = index
         self.number = number
-        print(number)
-        self.surf = tile_font.render(self.number, True, (0,0,0))
+        if number != "0":
+            self.surf = tile_font.render(self.number, True, (0,0,0))
+        if number == "0":
+            self.surf = tile_font.render(" ", True, (0,0,0))
         self.xpos = 0
         self.ypos = 0
         self.bg_rect = None
