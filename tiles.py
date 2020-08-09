@@ -110,9 +110,9 @@ def disp_tiles(main_window: gameWindow, game_state: tileGame):
                 moveTiles(main_window, game_state)
                 game_state.validMove = False
 
-            print(game_state.currIndex,
-                  game_state.tileList[game_state.currIndex].number,
-                  game_state.tileList[game_state.currIndex].xpos)
+            #print(game_state.currIndex,
+            #      game_state.tileList[game_state.currIndex].number,
+            #      game_state.tileList[game_state.currIndex].xpos)
 
 def init_tiles(tile_font: pygame.font):
 
