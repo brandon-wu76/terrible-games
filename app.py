@@ -90,9 +90,12 @@ def disp_title():
         button.renderButton(window)
 
 def disp_tiles():
-    window.fill((209, 169, 132))
+    # window.fill((209, 169, 132))
     test_text = title_font.render("Tiles", True, (0, 0, 0))
     window.blit(test_text, (0, 0))
+    
+    moves_text = tile_font.render("Moves: " + str(moves), True, (0, 0, 0))
+    window.blit(moves_text, (200, 28))
     
     for tile in tileList:
         tile.renderTile(window, tile_font)
@@ -126,6 +129,7 @@ button_list = init_title_buttons(game_list, button_coordinates)
 tileList, emptyIndex = init_tiles()
 
 running = True
+moves = 0
 
 disp_states = {"Title": disp_title,
                "Tiles": disp_tiles,
@@ -169,7 +173,7 @@ while running:
                     checkEmpty = find_index(mouse_x,mouse_y)
                     if checkEmpty == emptyIndex:
                         validMove = True
-                        print("valid move")
+                        moves +=1
                     tileClicked = False
                 
                 # When the player clicks the tile they want to move
