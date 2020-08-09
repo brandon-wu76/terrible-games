@@ -23,8 +23,12 @@ class Tile:
                                                 gc.TILE_WIDTH, 
                                                 gc.TILE_WIDTH)
     
-    def renderTile(self, window):
+    def renderTile(self, window, tile_font):
         #renders a tile if set_pos has been called
         assert self.bg_rect is not None
         pygame.draw.rect(window, (0,0,0), self.bg_rect, 3)
+        if self.number != "0":
+            self.surf = tile_font.render(self.number, True, (0,0,0))
+        if self.number == "0":
+            self.surf = tile_font.render(" ", True, (0,0,0))
         window.blit(self.surf, (self.xpos + gc.TILE_WIDTH//3, self.ypos + gc.TILE_WIDTH//3.5))

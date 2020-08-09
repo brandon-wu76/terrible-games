@@ -31,8 +31,8 @@ def init_title_buttons(button_names, button_coords):
 SQUARE_SIZE = gc.TILE_WIDTH*gc.TILE_WIDTH
 NUM_SQUARE_PER_SIDE = 4
 def find_index(x,y):
-    row = (y-gc.TILE_TOP_OFFSET) // SQUARE_SIZE
-    col = (x-gc.TILE_MARGIN_WIDTH) // SQUARE_SIZE
+    row = (y-gc.TILE_TOP_OFFSET) // gc.TILE_WIDTH
+    col = (x-gc.TILE_MARGIN_WIDTH) // gc.TILE_WIDTH
     index = row * NUM_SQUARE_PER_SIDE + col
     return index
 
@@ -68,8 +68,16 @@ def init_tiles():
         tile.set_pos(xpos, ypos)
         tileList.append(tile)
     
-    return tileList
+    return tileList, emptyIndex
         
+def moveTiles(emptyIndex, currIndex, tileList):
+    temp = tileList[emptyIndex].number
+    tileList[emptyIndex].number = tileList[currIndex].number
+    tileList[currIndex].number = temp
+    emptyIndex = currIndex
+    for tile in tileList:
+        tile.renderTile(window, tile_font)
+    return tileList, emptyIndex
 
 ###  Game Rendering Functions  ###
 
@@ -82,10 +90,12 @@ def disp_title():
         button.renderButton(window)
 
 def disp_tiles():
+    window.fill((209, 169, 132))
     test_text = title_font.render("Tiles", True, (0, 0, 0))
     window.blit(test_text, (0, 0))
+    
     for tile in tileList:
-        tile.renderTile(window)
+        tile.renderTile(window, tile_font)
 
 def disp_52pickup():
     return
@@ -113,7 +123,7 @@ game_list = ["Tiles", "52 Pickup", "Third Game"]
 button_coordinates = [(1/5,3/4), (1/2,3/4), (4/5,3/4)]
 
 button_list = init_title_buttons(game_list, button_coordinates)
-tileList = init_tiles()
+tileList, emptyIndex = init_tiles()
 
 running = True
 
@@ -124,6 +134,8 @@ disp_states = {"Title": disp_title,
 }
 
 current_screen = "Title"
+tileClicked = False
+validMove = False
 
 ###  Game Loop  ###
 
@@ -145,8 +157,32 @@ while running:
 
         if e.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            for button in button_list:
-                if button.bg_rect.collidepoint(mouse_x, mouse_y):
-                    current_screen = button.name
+            if current_screen == "Title":
+                for button in button_list:
+                    if button.bg_rect.collidepoint(mouse_x, mouse_y):
+                        current_screen = button.name
 
+            # for tiles display
+            elif current_screen == "Tiles":
+                 # check if the next tile clicked is empty 
+                if tileClicked:
+                    checkEmpty = find_index(mouse_x,mouse_y)
+                    if checkEmpty == emptyIndex:
+                        validMove = True
+                        print("valid move")
+                    tileClicked = False
+                
+                # When the player clicks the tile they want to move
+                else:
+                    currIndex = find_index(mouse_x, mouse_y)
+                    tileClicked = True
+                    validMove = False
+
+                if validMove:
+                    tileList, emptyIndex = moveTiles(checkEmpty, currIndex, tileList)
+                    validMove = False
+                print(currIndex, tileList[currIndex].number, tileList[currIndex].xpos)
+
+                        
+                
     display.flip()
