@@ -4,10 +4,11 @@ from pygame import display, event
 
 
 class gameWindow:
-    def __init__(self, window: pygame.Surface, running: bool, curr_screen: str):
+    def __init__(self, window: pygame.Surface, running: bool, curr_screen: str, img: pygame.Surface):
         self.window = window
         self.running = running
         self.screen = curr_screen
+        self.background = img
 
 class Button:
     def __init__(self, button_name, button_font):
@@ -41,7 +42,18 @@ def initialize_game():
     display.set_caption("Terrible Games")
     pygame.font.init()
 
-    main_window = gameWindow(window=window, running=True, curr_screen="Title")
+    load_font = pygame.font.SysFont(('Comic Sans MS'), 45)
+    load_text = load_font.render("Loading...", True, (0, 0, 0))
+    x = (gc.DISPLAY_WIDTH*1.03-load_text.get_rect().right)//2
+    y = (gc.DISPLAY_HEIGHT-load_text.get_rect().bottom)//2
+    window.fill((210,127,73))
+    window.blit(load_text, (x,y))
+    display.flip()
+
+    image = pygame.image.load("./resources/wood_texture.jpg").convert()
+    image = pygame.transform.scale(image, (gc.DISPLAY_WIDTH,gc.DISPLAY_HEIGHT))
+
+    main_window = gameWindow(window=window, running=True, curr_screen="Title", img=image)
     return main_window
 
 def init_title_buttons(button_names, button_coords):
@@ -64,6 +76,18 @@ def init_title_buttons(button_names, button_coords):
         button.set_pos(x_pos, y_pos)
         buttons_list.append(button)
 
+    ## Help button initialization ##
+    helpbutton = Button("?", button_font)
+    x_pos = int(gc.DISPLAY_WIDTH * 15 / 16)
+    y_pos = int(gc.DISPLAY_HEIGHT * 1 / 32)
+    helpbutton.set_pos(x_pos, y_pos)
+    helpbutton.bg_rect = pygame.Rect(helpbutton.xpos - helpbutton.surf.get_height()//2,
+                                     helpbutton.ypos,
+                                     helpbutton.surf.get_height(),
+                                     helpbutton.surf.get_height()
+                                     )
+    buttons_list.append(helpbutton)
+
     return buttons_list
 
 def disp_title(main_window: gameWindow, button_list: list, title_text: pygame.Surface):
@@ -76,6 +100,27 @@ def disp_title(main_window: gameWindow, button_list: list, title_text: pygame.Su
     main_window.window.blit(title_text, (x_pos, y_pos))
     for button in button_list:
         button.renderButton(main_window.window)
+
+    for e in event.get():
+        if e.type == pygame.QUIT:
+            main_window.running = False
+
+        if e.type == pygame.KEYDOWN:
+            if e.key == pygame.K_BACKSPACE:
+                main_window.screen = "Title"
+
+        if e.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            if main_window.screen == "Title":
+                for button in button_list:
+                    if button.bg_rect.collidepoint(mouse_x, mouse_y):
+                        main_window.screen = button.name
+
+def disp_help(main_window: gameWindow, help_text: pygame.Surface):
+
+    x_pos = (gc.DISPLAY_WIDTH*1.02 - help_text.get_rect().right) // 2
+    y_pos = (gc.DISPLAY_HEIGHT - help_text.get_rect().bottom) // 4
+    main_window.window.blit(help_text, (x_pos, y_pos))
 
     for e in event.get():
         if e.type == pygame.QUIT:

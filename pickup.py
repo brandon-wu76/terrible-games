@@ -50,7 +50,7 @@ def disp_pickup(main_window: game_base.gameWindow, cardlist: list):
                     cardlist.remove(c)
                     break
     if not cardlist:
-        main_window.window.fill((209, 169, 132))
+        main_window.window.blit(main_window.background, (0,0))
         finish_font = pygame.font.SysFont(('Comic Sans MS'), 30)
         finish_line1 = finish_font.render("You did it!", True, (0, 0, 0))
         finish_line2 = finish_font.render("Now where did I put those keys... oops", True, (0, 0, 0))
